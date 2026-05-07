@@ -8,11 +8,15 @@
         msg: "Semaphore está funcionando com Ansible no localhost!"
 
 - hosts: switches
+  gather_facts: no
   tasks:
-    - name: Teste de ping remoto
-      ping:
+    - name: Coletar informações IOS
+      ios_facts:
 
-    - name: Mostrar mensagem remota
+    - name: Mostrar versão
       debug:
-        msg: "Semaphore está funcionando com Ansible no servidor remoto!"
+        msg: "Versão: {{ ansible_net_version }}"
 
+    - name: Mostrar hostname
+      debug:
+        msg: "Hostname: {{ ansible_net_hostname }}"
