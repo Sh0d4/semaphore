@@ -11,8 +11,8 @@
       ansible.builtin.file:
         path: backup
         state: directory
-        owner: saoevcar
-        group: saoevcar
+        owner: semaphore
+        group: semaphore
         mode: '0775'
 
     - name: Enviar write memory
