@@ -10,13 +10,6 @@
 - hosts: switches
   gather_facts: no
   tasks:
-    - name: Coletar informações IOS
-      ios_facts:
+    - name: Mostrar versão IOS
+      raw: show version
 
-    - name: Mostrar versão
-      debug:
-        msg: "Versão: {{ ansible_net_version }}"
-
-    - name: Mostrar hostname
-      debug:
-        msg: "Hostname: {{ ansible_net_hostname }}"
