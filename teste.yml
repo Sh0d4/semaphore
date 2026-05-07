@@ -10,6 +10,14 @@
 - hosts: switches
   gather_facts: no
   tasks:
-    - name: Mostrar versão IOS
-      raw: show version
+    - name: Executar "show version"
+      ios_command:
+        commands:
+          - show version
+      register: versao
+
+    - name: Mostrar saída
+      debug:
+        var: versao.stdout_lines
+
 
