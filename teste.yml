@@ -1,8 +1,18 @@
 - hosts: local
   tasks:
-    - name: Teste de ping
+    - name: Teste de ping local
       ping:
 
-    - name: Mostrar mensagem
+    - name: Mostrar mensagem local
       debug:
-        msg: "Semaphore está funcionando com Ansible!"
+        msg: "Semaphore está funcionando com Ansible no localhost!"
+
+- hosts: servidores
+  tasks:
+    - name: Teste de ping remoto
+      ping:
+
+    - name: Mostrar mensagem remota
+      debug:
+        msg: "Semaphore está funcionando com Ansible no servidor remoto!"
+
