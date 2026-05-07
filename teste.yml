@@ -7,7 +7,7 @@
       debug:
         msg: "Semaphore está funcionando com Ansible no localhost!"
 
-- hosts: servidores
+- hosts: switches
   tasks:
     - name: Teste de ping remoto
       ping:
