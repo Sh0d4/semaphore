@@ -9,7 +9,7 @@
       delegate_to: localhost
       run_once: true
       ansible.builtin.file:
-        path: backup
+        path: /var/backups/switches
         state: directory
         mode: '0775'
 
