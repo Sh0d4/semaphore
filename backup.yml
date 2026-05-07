@@ -9,7 +9,7 @@
       delegate_to: localhost
       run_once: true
       ansible.builtin.file:
-        path: /backups/
+        path: /home/semaphore/backup/
         state: directory
         mode: '0775'
 
@@ -34,6 +34,6 @@
           Time: {{ lookup('pipe', 'date +%Y-%m-%dT%H:%M:%S') }}
           --- show interfaces status ---
           {{ intf_result.stdout[0] | default('Sem saída') }}
-        dest: "backup/{{ (ansible_host | default(inventory_hostname)) }}.txt"
+        dest: "/home/semaphore/backup/{{ (ansible_host | default(inventory_hostname)) }}.txt"
         mode: '0664'
       when: intf_result is defined
