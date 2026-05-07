@@ -36,7 +36,7 @@
           Time: {{ lookup('pipe', 'date +%Y-%m-%dT%H:%M:%S') }}
           --- show interfaces status ---
           {{ intf_result.stdout[0] | default('Sem saída') }}
-        dest: "backup/{{ (ansible_host | default(inventory_hostname)) }}.txt"
+        dest: "/var/backups/switches/{{ (ansible_host | default(inventory_hostname)) }}.txt"
         owner: saoevcar
         group: saoevcar
         mode: '0664'
