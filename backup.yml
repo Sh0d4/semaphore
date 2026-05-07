@@ -1,0 +1,43 @@
+---
+- name: Save config and capture interface status on Cisco IOS switches
+  hosts: ios_switches
+  gather_facts: no
+
+  tasks:
+
+    - name: Criar pasta de backup local com permissões de edição
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.file:
+        path: backup
+        state: directory
+        owner: saoevcar
+        group: saoevcar
+        mode: '0775'
+
+    - name: Enviar write memory
+      ios_command:
+        commands:
+          - write memory
+      register: wr_result
+      ignore_errors: true
+
+    - name: Enviar show interfaces status
+      ios_command:
+        commands:
+          - show interfaces status
+      register: intf_result
+      ignore_errors: true
+
+    - name: Salvar o output de show interfaces status (arquivo nomeado pelo IP)
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: |
+          Time: {{ lookup('pipe', 'date +%Y-%m-%dT%H:%M:%S') }}
+          --- show interfaces status ---
+          {{ intf_result.stdout[0] | default('Sem saída') }}
+        dest: "backup/{{ (ansible_host | default(inventory_hostname)) }}.txt"
+        owner: saoevcar
+        group: saoevcar
+        mode: '0664'
+      when: intf_result is defined
