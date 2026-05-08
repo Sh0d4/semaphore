@@ -1,25 +1,36 @@
-- name: Backup Cisco IOS switches
-  hosts: switches
+---
+- name: Save config and capture interface status on Cisco IOS switches
+  hosts: ios_switches
   gather_facts: no
 
   tasks:
-    - name: Salvar configuração no switch (wr)
-      ios_command:
-        commands:
-          - write memory
-      become: yes
 
-    - name: Coletar status das interfaces
-      ios_command:
-        commands:
-          - show interface status
-      register: interface_status
+    - name: Enviar write memory
+      ansible.builtin.raw: write memory
+      register: wr_result
+      ignore_errors: true
 
-    - name: Salvar saída do show interface status
-      copy:
-        content: "{{ interface_status.stdout[0] }}"
-        dest: "/srv/semaphore-backups/{{ inventory_hostname }}-interfaces.txt"
+    - name: Enviar show interfaces status
+      ansible.builtin.raw: show interfaces status
+      register: intf_result
+      ignore_errors: true
+
+    - name: Salvar outputs em arquivo (nomeado pelo IP)
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: |
+          Time: {{ lookup('pipe', 'date +%Y-%m-%dT%H:%M:%S') }}
+
+          --- write memory ---
+          {{ wr_result.stdout | default('Sem saída') }}
+
+          --- show running-config ---
+          {{ run_result.stdout | default('Sem saída') }}
+
+          --- show interfaces status ---
+          {{ intf_result.stdout | default('Sem saída') }}
+        dest: "/srv/semaphore-backups/{{ (ansible_host | default(inventory_hostname)) }}.txt"
         owner: saoevcar
         group: users
-        mode: '0660'
-      become: yes
+        mode: '0664'
+      when: intf_result is defined
