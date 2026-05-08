@@ -1,39 +1,34 @@
----
-- name: Save config and capture interface status on Cisco IOS switches
-  hosts: ios_switches
+- name: Backup Cisco IOS configs
+  hosts: switches
   gather_facts: no
-
   tasks:
-
-    - name: Criar pasta de backup local com permissões de edição
-      delegate_to: localhost
-      run_once: true
-      ansible.builtin.file:
-        path: /home/semaphore/backup/
+    - name: Garantir pasta de backup
+      file:
+        path: /home/semaphore/backup
         state: directory
         mode: '0775'
+      delegate_to: localhost
 
-    - name: Enviar write memory
+    - name: Salvar running-config
       ios_command:
         commands:
-          - write memory
-      register: wr_result
-      ignore_errors: true
+          - show running-config
+      register: running
 
-    - name: Enviar show interfaces status
+    - name: Gravar running-config em arquivo
+      copy:
+        content: "{{ running.stdout[0] }}"
+        dest: "/home/semaphore/backup/{{ inventory_hostname }}-running-config.txt"
+      delegate_to: localhost
+
+    - name: Salvar show interfaces status
       ios_command:
         commands:
           - show interfaces status
-      register: intf_result
-      ignore_errors: true
+      register: interfaces
 
-    - name: Salvar o output de show interfaces status (arquivo nomeado pelo IP)
+    - name: Gravar interfaces em arquivo
+      copy:
+        content: "{{ interfaces.stdout[0] }}"
+        dest: "/home/semaphore/backup/{{ inventory_hostname }}-interfaces.txt"
       delegate_to: localhost
-      ansible.builtin.copy:
-        content: |
-          Time: {{ lookup('pipe', 'date +%Y-%m-%dT%H:%M:%S') }}
-          --- show interfaces status ---
-          {{ intf_result.stdout[0] | default('Sem saída') }}
-        dest: "/home/semaphore/backup/{{ (ansible_host | default(inventory_hostname)) }}.txt"
-        mode: '0664'
-      when: intf_result is defined
