@@ -13,6 +13,7 @@
       ios_command:
         commands:
           - show interface status
+          timeout: 120
       register: interface_status
 
     - name: Salvar saída do show interface status
