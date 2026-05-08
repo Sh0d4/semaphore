@@ -13,7 +13,8 @@
       ios_command:
         commands:
           - show interface status
-        timeout: 120
+        wait_for:
+          - result[0] contains Gi
       register: interface_status
 
     - name: Salvar saída do show interface status
