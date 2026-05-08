@@ -1,30 +1,25 @@
 - name: Backup Cisco IOS switches
   hosts: switches
   gather_facts: no
-  tasks:
-    - name: Garantir pasta de backup existe
-      file:
-        path: /srv/semaphore-backups
-        state: directory
-        owner: saoevcar
-        group: users
-        mode: '0775'
-      delegate_to: localhost
 
-    - name: Executar write memory
+  tasks:
+    - name: Salvar configuração no switch (wr)
       ios_command:
         commands:
           - write memory
-      register: wr_output
+      become: yes
 
-    - name: Executar show interfaces status
+    - name: Coletar status das interfaces
       ios_command:
         commands:
-          - show interfaces status
-      register: sh_int_status
+          - show interface status
+      register: interface_status
 
-    - name: Salvar output de show interfaces status em arquivo
+    - name: Salvar saída do show interface status
       copy:
-        content: "{{ sh_int_status.stdout[0] }}"
+        content: "{{ interface_status.stdout[0] }}"
         dest: "/srv/semaphore-backups/{{ inventory_hostname }}-interfaces.txt"
-      delegate_to: localhost
+        owner: saoevcar
+        group: users
+        mode: '0660'
+      become: yes
