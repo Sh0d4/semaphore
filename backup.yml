@@ -4,7 +4,7 @@
   tasks:
     - name: Garantir pasta de backup existe
       file:
-        path: /home/semaphore/backup
+        path: /srv/semaphore-backups
         state: directory
         mode: '0775'
       delegate_to: localhost
@@ -24,5 +24,5 @@
     - name: Salvar output de show interfaces status em arquivo
       copy:
         content: "{{ sh_int_status.stdout[0] }}"
-        dest: "/home/semaphore/backup/{{ inventory_hostname }}-interfaces.txt"
+        dest: "/srv/semaphore-backups/{{ inventory_hostname }}-interfaces.txt"
       delegate_to: localhost
