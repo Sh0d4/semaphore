@@ -6,6 +6,8 @@
       file:
         path: /srv/semaphore-backups
         state: directory
+        owner: saoevcar
+        group: users
         mode: '0775'
       delegate_to: localhost
 
