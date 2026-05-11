@@ -21,6 +21,15 @@
           - show interfaces status
       register: intf_result
 
+    - name: Garantir pasta de backup existe no host de controle
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: /srv/semaphore-backups
+        state: directory
+        owner: saoevcar
+        group: users
+        mode: '0770'
+
     - name: Salvar outputs em arquivo (nomeado pelo IP)
       delegate_to: localhost
       ansible.builtin.copy:
