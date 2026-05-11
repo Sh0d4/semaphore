@@ -23,6 +23,7 @@
 
     - name: Garantir pasta de backup existe no host de controle
       delegate_to: localhost
+      become: yes
       ansible.builtin.file:
         path: /srv/semaphore-backups
         state: directory
