@@ -7,7 +7,7 @@
       debug:
         msg: "Semaphore está funcionando com Ansible no localhost!"
 
-- hosts: switches
+- hosts: ios_switches
   gather_facts: no
   tasks:
     - name: Executar "show version"
