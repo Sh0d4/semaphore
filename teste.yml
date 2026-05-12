@@ -1,11 +1,9 @@
 - hosts: local
+  gather_facts: no
   tasks:
-    - name: Teste de ping local
+    - name: Testar conexão com localhost
       ping:
 
-    - name: Mostrar mensagem local
+    - name: Mostrar mensagem
       debug:
-        msg: "Semaphore está funcionando com Ansible no localhost!"
-
-
-
+        msg: "Inventário localhost funcionando!"
