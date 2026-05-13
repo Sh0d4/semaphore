@@ -1,19 +1,39 @@
-- name: Coletar informações do switch
+---
+- name: Coletar informações do switch (2960X legado)
   hosts: SAOTS016
   gather_facts: no
+
   tasks:
-    - name: Show running-config
+
+    - name: Coletar running-config
       raw: show running-config
-      register: running_config
+      register: run_result
 
-    - name: Mostrar saída do running-config
-      debug:
-        var: running_config.stdout_lines
-
-    - name: Show Interfaces status
+    - name: Coletar status das interfaces
       raw: show interface status
-      register: interfaces_status
+      register: intf_result
 
-    - name: Mostrar saída das interfaces
+    - name: Salvar outputs em arquivo (nomeado pelo IP)
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: |
+          Host: {{ inventory_hostname }}
+          Time: {{ lookup('pipe', 'date +%Y-%m-%dT%H:%M:%S') }}
+
+          --- Running Config ---
+          {{ run_result.stdout | default('Sem saída') }}
+
+          --- Interface Status ---
+          {{ intf_result.stdout | default('Sem saída') }}
+        dest: "/srv/semaphore-backups/{{ (ansible_host | default(inventory_hostname)) }}.txt"
+        owner: saoevcar
+        group: saoevcar
+        mode: '0664'
+
+    - name: Mostrar saída do running-config na tela
       debug:
-        var: interfaces_status.stdout_lines
+        var: run_result.stdout_lines
+
+    - name: Mostrar saída das interfaces na tela
+      debug:
+        var: intf_result.stdout_lines
