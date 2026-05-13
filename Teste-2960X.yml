@@ -1,0 +1,6 @@
+- name: Testar SSH puro
+  hosts: SAOTS016
+  gather_facts: no
+  tasks:
+    - name: Executar show version via raw
+      raw: show version
