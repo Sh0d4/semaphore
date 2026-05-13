@@ -7,9 +7,12 @@
     - name: Testar conectividade com ping
       ansible.builtin.ping:
 
-    - name: Mostrar config carregada
-      debug:
-        var: ansible_config_file
+    - name: Executar show version
+      ios_command:
+        commands:
+          - show version
+      register: version_output
+      ignore_errors: yes   # evita que o playbook quebre se a conexão falhar
 
     - name: Exibir saída do show version
       debug:
