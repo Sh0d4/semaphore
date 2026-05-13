@@ -1,6 +1,8 @@
-- name: Testar SSH puro
+- name: Coletar informações do switch
   hosts: SAOTS016
   gather_facts: no
   tasks:
-    - name: Executar show version via raw
-      raw: show version
+    - name: Show running-config
+      raw: show running-config
+    - name: Show Interfaces status
+      raw: show interface status
