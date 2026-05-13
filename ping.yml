@@ -7,16 +7,6 @@
     - name: Testar conectividade com ping
       ansible.builtin.ping:
 
-    - name: Executar show version
-      ios_command:
-        commands:
-          - show version
-      register: version_output
-
-    - name: Exibir saída do show version
-      debug:
-        var: version_output.stdout_lines
-
     - name: Mostrar config carregada
       debug:
         var: ansible_config_file
