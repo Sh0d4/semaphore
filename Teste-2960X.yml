@@ -4,5 +4,16 @@
   tasks:
     - name: Show running-config
       raw: show running-config
+      register: running_config
+
+    - name: Mostrar saída do running-config
+      debug:
+        var: running_config.stdout_lines
+
     - name: Show Interfaces status
       raw: show interface status
+      register: interfaces_status
+
+    - name: Mostrar saída das interfaces
+      debug:
+        var: interfaces_status.stdout_lines
