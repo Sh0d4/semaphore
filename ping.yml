@@ -16,3 +16,8 @@
     - name: Exibir saída do show version
       debug:
         var: version_output.stdout_lines
+
+    - name: Mostrar config carregada
+      debug:
+        var: ansible_config_file
+
