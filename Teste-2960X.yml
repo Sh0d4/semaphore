@@ -1,6 +1,6 @@
 ---
 - name: Coletar informações do switch (2960X legado)
-  hosts: SAOTS016
+  hosts: ios_switches
   gather_facts: no
 
   tasks:
