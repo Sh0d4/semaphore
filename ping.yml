@@ -1,6 +1,6 @@
 ---
 - name: Teste de conexão SSH com switches
-  hosts: all
+  hosts: switches
   gather_facts: no
 
   tasks:
