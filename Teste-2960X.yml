@@ -29,11 +29,3 @@
         owner: saoevcar
         group: saoevcar
         mode: '0664'
-
-    - name: Mostrar saída do running-config na tela
-      debug:
-        var: run_result.stdout_lines
-
-    - name: Mostrar saída das interfaces na tela
-      debug:
-        var: intf_result.stdout_lines
