@@ -40,6 +40,7 @@ for name, device in switches.items():
         ip=ip,
         username=username,
         password=password,
+        ssh_config_file="~/.ssh/config"
     )
     conn.enable()
 
