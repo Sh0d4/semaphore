@@ -8,6 +8,7 @@ Transport._preferred_kex = (
 Transport._preferred_keys = ("ssh-rsa",)
 
 import os
+import getpass
 from netmiko import ConnectHandler
 from datetime import datetime
 
@@ -16,9 +17,9 @@ switches = {
     "SAOTS012": {"ansible_host": "10.110.0.112"},
 }
 
-# Credenciais vindas do Semaphore (secrets)
-username = "saoevcar"
-password = "3v4ndr0Abc!@#$"
+# Solicitar credenciais uma vez
+username = input("Usuário: ")
+password = getpass.getpass("Senha: ")
 
 # Lista de comandos
 commands = [
