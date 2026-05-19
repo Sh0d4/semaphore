@@ -4,12 +4,7 @@
   gather_facts: no
 
   tasks:
-
-    - name: Modo Configuracao Global
-      raw: conf t 
-      register: conf_t
-      ignore_errors: yes
-      
+    
     - name: Remover kron occurrence
       raw: no kron occurrence DAILY-BACKUP at 11:15 recurring
       register: kron_occ
