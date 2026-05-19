@@ -1,3 +1,12 @@
+from paramiko import Transport, RSAKey
+
+# Forçar algoritmos antigos
+Transport._preferred_kex = (
+    "diffie-hellman-group1-sha1",
+    "diffie-hellman-group14-sha1",
+)
+Transport._preferred_keys = ("ssh-rsa",)
+
 import os
 from netmiko import ConnectHandler
 from datetime import datetime
