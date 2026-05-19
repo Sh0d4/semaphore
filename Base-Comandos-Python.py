@@ -17,8 +17,8 @@ switches = {
 }
 
 # Credenciais vindas do Semaphore (secrets)
-username = os.environ.get("SW_USER")
-password = os.environ.get("SW_PASS")
+username = "saoevcar"
+password = "3v4ndr0Abc!@#$"
 
 # Lista de comandos
 commands = [
