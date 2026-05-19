@@ -5,13 +5,11 @@ from datetime import datetime
 # Inventário embutido
 switches = {
     "SAOTS012": {"ansible_host": "10.111.5.47"},
-    "SAOTS013": {"ansible_host": "10.110.13.172"},
 }
 
 # Credenciais vindas do Semaphore (secrets)
 username = os.environ.get("SW_USER")
 password = os.environ.get("SW_PASS")
-enable_secret = os.environ.get("SW_ENABLE")
 
 # Lista de comandos
 commands = [
@@ -33,29 +31,33 @@ for name, device in switches.items():
         ip=ip,
         username=username,
         password=password,
-        secret=enable_secret,
     )
     conn.enable()
 
-    output = ""
+    # Executar comandos e registrar saída
+    results = {}
     for cmd in commands:
-        result = conn.send_config_set([cmd])
-        output += f"\n--- {cmd} ---\n{result}\n"
+        try:
+            result = conn.send_config_set([cmd])
+            results[cmd] = "OK"
+        except Exception as e:
+            results[cmd] = str(e)
 
     conn.save_config()
-    run_cfg = conn.send_command("show running-config")
-    intf_status = conn.send_command("show interfaces status")
     conn.disconnect()
 
-    filename = f"/srv/semaphore-backups/{ip}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.txt"
+    # Consolidar resultados em arquivo
+    filename = f"/srv/semaphore-backups/{ip}-alteracoes.txt"
     with open(filename, "w") as f:
         f.write(f"Host: {name}\n")
-        f.write(f"Time: {datetime.now().isoformat()}\n\n")
+        f.write(f"Time: {datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}\n\n")
         f.write("--- Resultados das alterações ---\n")
-        f.write(output)
-        f.write("\n--- Running Config ---\n")
-        f.write(run_cfg)
-        f.write("\n--- Interface Status ---\n")
-        f.write(intf_status)
+        f.write(f"*Kron occurrence: {results.get(commands[0], 'OK')}\n")
+        f.write(f"*Kron policy: {results.get(commands[1], 'OK')}\n")
+        f.write(f"*Logging 10.10.21.81: {results.get(commands[2], 'OK')}\n")
+        f.write(f"*Archive: {results.get(commands[3], 'OK')}\n")
+        f.write(f"*FTP user: {results.get(commands[4], 'OK')}\n")
+        f.write(f"*FTP pass: {results.get(commands[5], 'OK')}\n")
+        f.write(f"*Logging 10.110.10.44: {results.get(commands[6], 'OK')}\n")
 
     print(f"Arquivo gerado: {filename}")
