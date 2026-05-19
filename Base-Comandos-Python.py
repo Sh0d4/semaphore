@@ -1,17 +1,17 @@
-import yaml
 import os
 from netmiko import ConnectHandler
 from datetime import datetime
 
-# Carregar inventário Ansible
-with open("hosts.yml") as f:
-    inventory = yaml.safe_load(f)
-
-switches = inventory["all"]["hosts"]
+# Inventário embutido
+switches = {
+    "SAOTS012": {"ansible_host": "10.111.5.47"},
+    "SAOTS013": {"ansible_host": "10.110.13.172"},
+}
 
 # Credenciais vindas do Semaphore (secrets)
 username = os.environ.get("SW_USER")
 password = os.environ.get("SW_PASS")
+enable_secret = os.environ.get("SW_ENABLE")
 
 # Lista de comandos
 commands = [
