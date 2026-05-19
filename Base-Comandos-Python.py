@@ -4,7 +4,7 @@ from datetime import datetime
 
 # Inventário embutido
 switches = {
-    "SAOTS012": {"ansible_host": "10.111.5.47"},
+    "SAOTS012": {"ansible_host": "10.110.0.112"},
 }
 
 # Credenciais vindas do Semaphore (secrets)
