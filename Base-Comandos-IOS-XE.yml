@@ -29,6 +29,10 @@
           --- Comandos aplicados ---
           {{ config_changes.commands | default('Nenhum comando registrado') }}
 
+                --- Resultado ---
+          STDOUT: {{ config_changes.module_stdout | default('Sem saída') }}
+          STDERR: {{ config_changes.module_stderr | default('Sem erro') }}
+
         dest: "/srv/semaphore-backups/{{ (ansible_host | default(inventory_hostname)) }}-alteracoes.txt"
         owner: saoevcar
         group: saoevcar
