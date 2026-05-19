@@ -1,4 +1,5 @@
 import yaml
+import os
 from netmiko import ConnectHandler
 from datetime import datetime
 
@@ -8,6 +9,11 @@ with open("hosts.yml") as f:
 
 switches = inventory["all"]["hosts"]
 
+# Credenciais vindas do Semaphore (secrets)
+username = os.environ.get("SW_USER")
+password = os.environ.get("SW_PASS")
+
+# Lista de comandos
 commands = [
     "no kron occurrence DAILY-BACKUP at 11:15 recurring",
     "no kron policy-list DAILY-BACKUP",
@@ -20,17 +26,14 @@ commands = [
 
 for name, device in switches.items():
     ip = device["ansible_host"]
-    user = device["ansible_user"]
-    passwd = device["ansible_password"]
-    enable = device.get("ansible_become_password")
-
     print(f"Conectando ao switch {name} ({ip})...")
+
     conn = ConnectHandler(
         device_type="cisco_ios",
         ip=ip,
-        username=user,
-        password=passwd,
-        secret=enable,
+        username=username,
+        password=password,
+        secret=enable_secret,
     )
     conn.enable()
 
@@ -39,7 +42,7 @@ for name, device in switches.items():
         result = conn.send_config_set([cmd])
         output += f"\n--- {cmd} ---\n{result}\n"
 
-    save_output = conn.save_config()
+    conn.save_config()
     run_cfg = conn.send_command("show running-config")
     intf_status = conn.send_command("show interfaces status")
     conn.disconnect()
@@ -50,8 +53,6 @@ for name, device in switches.items():
         f.write(f"Time: {datetime.now().isoformat()}\n\n")
         f.write("--- Resultados das alterações ---\n")
         f.write(output)
-        f.write("\n--- Save Config ---\n")
-        f.write(save_output)
         f.write("\n--- Running Config ---\n")
         f.write(run_cfg)
         f.write("\n--- Interface Status ---\n")
