@@ -1,0 +1,62 @@
+---
+- name: Aplicar comandos e coletar informações em switches 2960X legado
+  hosts: ios_switches
+  gather_facts: no
+
+  tasks:
+
+    - name: Remover kron occurrence
+      raw: conf t ; no kron occurrence DAILY-BACKUP at 11:15 recurring ; end
+      register: kron_occ
+      ignore_errors: yes
+
+    - name: Remover kron policy-list
+      raw: conf t ; no kron policy-list DAILY-BACKUP ; end
+      register: kron_policy
+      ignore_errors: yes
+
+    - name: Remover logging host 10.10.21.81
+      raw: conf t ; no logging host 10.10.21.81 ; end
+      register: log1
+      ignore_errors: yes
+
+    - name: Remover archive
+      raw: conf t ; no archive ; end
+      register: archive
+      ignore_errors: yes
+
+    - name: Remover ftp username
+      raw: conf t ; no ip ftp username swbkftp ; end
+      register: ftp_user
+      ignore_errors: yes
+
+    - name: Remover ftp password
+      raw: conf t ; no ip ftp password Flex.123 ; end
+      register: ftp_pass
+      ignore_errors: yes
+
+    - name: Remover logging host 10.110.10.44
+      raw: conf t ; no logging host 10.110.10.44 transport udp port 11001 ; end
+      register: log2
+      ignore_errors: yes
+
+    - name: Consolidar resultados em arquivo
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: |
+          Host: {{ inventory_hostname }}
+          Time: {{ lookup('pipe', 'date +%Y-%m-%dT%H:%M:%S') }}
+
+          --- Resultados das alterações ---
+          *Kron occurrence: {{ kron_occ.stdout | default('OK') }}
+          *Kron policy: {{ kron_policy.stdout | default('OK') }}
+          *Logging 10.10.21.81: {{ log1.stdout | default('OK') }}
+          *Archive: {{ archive.stdout | default('OK') }}
+          *FTP user: {{ ftp_user.stdout | default('OK') }}
+          *FTP pass: {{ ftp_pass.stdout | default('OK') }}
+          *Logging 10.110.10.44: {{ log2.stdout | default('OK') }}
+
+        dest: "/srv/semaphore-backups/{{ (ansible_host | default(inventory_hostname)) }}-legado.txt"
+        owner: saoevcar
+        group: saoevcar
+        mode: '0664'
