@@ -61,12 +61,6 @@
       register: log2
       ignore_errors: yes
 
-    - name: Coletar running-config atualizado
-      ios_command:
-        commands:
-          - show running-config
-      register: run_result
-
     - name: Consolidar resultados em arquivo
       delegate_to: localhost
       ansible.builtin.copy:
@@ -83,8 +77,6 @@
           FTP pass: {{ ftp_pass.module_stderr | default('OK') }}
           Logging 10.110.10.44: {{ log2.module_stderr | default('OK') }}
 
-          --- Running Config ---
-          {{ run_result.stdout[0] | default('Sem saída') }}
         dest: "/srv/semaphore-backups/{{ (ansible_host | default(inventory_hostname)) }}-alteracoes.txt"
         owner: saoevcar
         group: saoevcar
