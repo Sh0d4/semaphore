@@ -1,16 +1,13 @@
-import os
+import yaml
 from netmiko import ConnectHandler
 from datetime import datetime
 
-# Lista de switches: separados por vírgula em variável de ambiente SW_IPS
-ips = os.environ.get("SW_IPS", "").split(",")
+# Carregar inventário Ansible
+with open("hosts.yml") as f:
+    inventory = yaml.safe_load(f)
 
-# Credenciais vindas do Semaphore (secrets)
-username = os.environ.get("SW_USER")
-password = os.environ.get("SW_PASS")
-enable_secret = os.environ.get("SW_ENABLE")
+switches = inventory["all"]["hosts"]
 
-# Comandos a aplicar
 commands = [
     "no kron occurrence DAILY-BACKUP at 11:15 recurring",
     "no kron policy-list DAILY-BACKUP",
@@ -21,17 +18,20 @@ commands = [
     "no logging host 10.110.10.44 transport udp port 11001",
 ]
 
-for ip in ips:
-    print(f"Conectando ao switch {ip}...")
-    device = {
-        "device_type": "cisco_ios",
-        "ip": ip.strip(),
-        "username": username,
-        "password": password,
-        "secret": enable_secret,
-    }
+for name, device in switches.items():
+    ip = device["ansible_host"]
+    user = device["ansible_user"]
+    passwd = device["ansible_password"]
+    enable = device.get("ansible_become_password")
 
-    conn = ConnectHandler(**device)
+    print(f"Conectando ao switch {name} ({ip})...")
+    conn = ConnectHandler(
+        device_type="cisco_ios",
+        ip=ip,
+        username=user,
+        password=passwd,
+        secret=enable,
+    )
     conn.enable()
 
     output = ""
@@ -39,19 +39,14 @@ for ip in ips:
         result = conn.send_config_set([cmd])
         output += f"\n--- {cmd} ---\n{result}\n"
 
-    # Salvar configuração
     save_output = conn.save_config()
-
-    # Coletar informações
     run_cfg = conn.send_command("show running-config")
     intf_status = conn.send_command("show interfaces status")
-
     conn.disconnect()
 
-    # Gerar arquivo de log
     filename = f"/srv/semaphore-backups/{ip}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.txt"
     with open(filename, "w") as f:
-        f.write(f"Host: {ip}\n")
+        f.write(f"Host: {name}\n")
         f.write(f"Time: {datetime.now().isoformat()}\n\n")
         f.write("--- Resultados das alterações ---\n")
         f.write(output)
