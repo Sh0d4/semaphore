@@ -17,6 +17,7 @@
           - no logging host 10.110.10.44 transport udp port 11001
         save_when: always
       register: config_changes
+      ignore_errors: yes
 
     - name: Registrar alterações em arquivo (nomeado pelo IP)
       delegate_to: localhost
