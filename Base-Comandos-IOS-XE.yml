@@ -1,0 +1,34 @@
+---
+- name: Aplicar comandos e registrar alterações em Cisco IOS
+  hosts: ios_switches
+  gather_facts: no
+
+  tasks:
+
+    - name: Executar comandos de configuração
+      ios_config:
+        lines:
+          - no kron occurrence DAILY-BACKUP at 11:15 recurring
+          - no kron policy-list DAILY-BACKUP
+          - no logging host 10.10.21.81
+          - no archive
+          - no ip ftp username swbkftp
+          - no ip ftp password Flex.123
+          - no logging host 10.110.10.44 transport udp port 11001
+        save_when: always
+      register: config_changes
+
+    - name: Registrar alterações em arquivo (nomeado pelo IP)
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: |
+          Host: {{ inventory_hostname }}
+          Time: {{ lookup('pipe', 'date +%Y-%m-%dT%H:%M:%S') }}
+
+          --- Comandos aplicados ---
+          {{ config_changes.commands | default('Nenhum comando registrado') }}
+
+        dest: "/srv/semaphore-backups/{{ (ansible_host | default(inventory_hostname)) }}-alteracoes.txt"
+        owner: saoevcar
+        group: saoevcar
+        mode: '0664'
