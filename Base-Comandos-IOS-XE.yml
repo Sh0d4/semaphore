@@ -69,13 +69,13 @@
           Time: {{ lookup('pipe', 'date +%Y-%m-%dT%H:%M:%S') }}
 
           --- Resultados das alterações ---
-          Kron occurrence: {{ kron_occ.module_stderr | default('OK') }}
-          Kron policy: {{ kron_policy.module_stderr | default('OK') }}
-          Logging 10.10.21.81: {{ log1.module_stderr | default('OK') }}
-          Archive: {{ archive.module_stderr | default('OK') }}
-          FTP user: {{ ftp_user.module_stderr | default('OK') }}
-          FTP pass: {{ ftp_pass.module_stderr | default('OK') }}
-          Logging 10.110.10.44: {{ log2.module_stderr | default('OK') }}
+          *Kron occurrence: {{ kron_occ.module_stderr | default('OK') }}
+          *Kron policy: {{ kron_policy.module_stderr | default('OK') }}
+          *Logging 10.10.21.81: {{ log1.module_stderr | default('OK') }}
+          *Archive: {{ archive.module_stderr | default('OK') }}
+          *FTP user: {{ ftp_user.module_stderr | default('OK') }}
+          *FTP pass: {{ ftp_pass.module_stderr | default('OK') }}
+          *Logging 10.110.10.44: {{ log2.module_stderr | default('OK') }}
 
         dest: "/srv/semaphore-backups/{{ (ansible_host | default(inventory_hostname)) }}-alteracoes.txt"
         owner: saoevcar
