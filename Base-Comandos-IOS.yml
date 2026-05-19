@@ -5,39 +5,48 @@
 
   tasks:
 
+    - name: Modo Configuracao Global
+      raw: conf t 
+      register: conf_t
+      ignore_errors: yes
+      
     - name: Remover kron occurrence
-      raw: conf t ; no kron occurrence DAILY-BACKUP at 11:15 recurring ; end
+      raw: no kron occurrence DAILY-BACKUP at 11:15 recurring
       register: kron_occ
       ignore_errors: yes
 
     - name: Remover kron policy-list
-      raw: conf t ; no kron policy-list DAILY-BACKUP ; end
+      raw: no kron policy-list DAILY-BACKUP
       register: kron_policy
       ignore_errors: yes
 
     - name: Remover logging host 10.10.21.81
-      raw: conf t ; no logging host 10.10.21.81 ; end
+      raw: no logging host 10.10.21.81
       register: log1
       ignore_errors: yes
 
     - name: Remover archive
-      raw: conf t ; no archive ; end
+      raw: no archive
       register: archive
       ignore_errors: yes
 
     - name: Remover ftp username
-      raw: conf t ; no ip ftp username swbkftp ; end
+      raw: no ip ftp username swbkftp
       register: ftp_user
       ignore_errors: yes
 
     - name: Remover ftp password
-      raw: conf t ; no ip ftp password Flex.123 ; end
+      raw: no ip ftp password Flex.123
       register: ftp_pass
       ignore_errors: yes
 
     - name: Remover logging host 10.110.10.44
-      raw: conf t ; no logging host 10.110.10.44 transport udp port 11001 ; end
+      raw: no logging host 10.110.10.44 transport udp port 11001
       register: log2
+      ignore_errors: yes
+
+    - name: Salvar configuração no switch legado
+      raw: write memory
       ignore_errors: yes
 
     - name: Consolidar resultados em arquivo
