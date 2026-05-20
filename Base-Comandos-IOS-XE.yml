@@ -56,7 +56,7 @@
     - name: Remover logging host 10.110.10.44
       ios_config:
         lines:
-          - no logging host 10.110.10.44 transport udp port 11001
+          - logging host 10.110.10.44 transport udp port 11001
         save_when: always
       register: log2
       ignore_errors: yes
